@@ -11,10 +11,11 @@ This is a Proof-of-Concept (PoC) demonstrating an OAuth flow hijack vulnerabilit
 ## How to Use
 
 1. Replace `REPLACE_ME` in `redirect.html` with your own Webhook URL (e.g., from https://webhook.site).
-2. Host the `redirect.html` on your own test domain (or locally).
-3. Open the hosted `index.html` and click **“Start Attack”**.
-4. The popup will redirect to an attacker-controlled OAuth URL.
-5. After login, the token will be sent to your specified webhook.
+2. Replace the login url in the `index.html` with your own login endpoint
+3. Host the `redirect.html` on your own test domain (or locally).
+4. Open the hosted `index.html` and click **“Start Attack”**.
+5. The popup will redirect to an attacker-controlled OAuth URL.
+6. After login, the token will be sent to your specified webhook.
 
 ## Disclosure Note
 
